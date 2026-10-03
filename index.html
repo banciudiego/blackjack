@@ -1515,6 +1515,9 @@
 
   function deal() {
     if (app.bet <= 0 || app.bet > app.bankroll) return;
+    app.bankroll -= app.bet;           // deduct stake up-front so canDouble check is accurate
+    updateBankrollDisplay();
+    save('blackjack_bankroll', app.bankroll);
     app.hands = [{ cards: [drawCard(), drawCard()], bet: app.bet, status: 'active', isSplit: false, isSplitAces: false, settled: false, delta: 0 }];
     app.dealer = [drawCard(), drawCard()];
     app.activeHandIndex = 0;
@@ -1524,6 +1527,7 @@
     setChipsEnabled(false);
     playSound('deal');
     checkNaturals();
+  }
   }
 
   function checkNaturals() {
@@ -1555,12 +1559,13 @@
 
   function settleNaturals(dealerBJ, playerBJ) {
     const hand = app.hands[0];
-    if (dealerBJ && playerBJ) { hand.delta = 0; hand.status = 'stood'; }
-    else if (dealerBJ) { hand.delta = -hand.bet; hand.status = 'stood'; }
-    else { hand.delta = Math.floor(hand.bet * 1.5); hand.status = 'blackjack'; }
+    // Stake already deducted at deal; return stake+profit on win, stake on push, 0 on loss
+    let returned;
+    if (dealerBJ && playerBJ) { hand.delta = 0;                           returned = hand.bet;                              hand.status = 'stood';     }
+    else if (dealerBJ)         { hand.delta = -hand.bet;                   returned = 0;                                     hand.status = 'stood';     }
+    else                       { hand.delta = Math.floor(hand.bet * 1.5); returned = hand.bet + Math.floor(hand.bet * 1.5); hand.status = 'blackjack'; }
     hand.settled = true;
-    app.bankroll += hand.delta;
-    app.phase = 'done';
+    app.bankroll += returned;
     renderAll();
     const outcome = dealerBJ && playerBJ ? 'Push (both blackjack)' : (dealerBJ ? 'Dealer blackjack' : 'Blackjack! You win');
     setMessage(outcome + (hand.delta ? (hand.delta > 0 ? ' (+' + fmt(hand.delta) + ')' : ' (' + fmt(hand.delta) + ')') : ''), hand.delta > 0 ? 'win' : (hand.delta < 0 ? 'lose' : ''));
@@ -1615,6 +1620,7 @@
 
   function doubleDown() {
     const hand = currentHand();
+    if (app.bankroll < hand.bet) return; // guard: not enough funds
     app.bankroll -= hand.bet;
     hand.bet *= 2;
     updateBankrollDisplay();
@@ -1627,6 +1633,7 @@
 
   function splitHand() {
     const hand = currentHand();
+    if (app.bankroll < hand.bet) return; // guard: not enough funds
     const [c1, c2] = hand.cards;
     const wasAce = c1.rank === 'A';
     app.bankroll -= hand.bet;
@@ -1652,10 +1659,10 @@
 
   function surrender() {
     const hand = currentHand();
-    hand.delta = -Math.floor(hand.bet / 2);
+    hand.delta   = -Math.floor(hand.bet / 2);  // display: lost half the bet
     hand.settled = true;
-    hand.status = 'surrendered';
-    app.bankroll += hand.delta;
+    hand.status  = 'surrendered';
+    app.bankroll += Math.ceil(hand.bet / 2);   // return the other half (stake was deducted at deal)
     updateBankrollDisplay();
     advanceHand();
   }
@@ -1709,16 +1716,16 @@
         return;
       }
       const val = handValue(hand.cards);
-      let delta;
-      if (hand.status === 'busted') delta = -hand.bet;
-      else if (dealerBust) delta = hand.bet;
-      else if (val > dealerVal) delta = hand.bet;
-      else if (val < dealerVal) delta = -hand.bet;
-      else delta = 0;
+      let delta, returned;
+      if (hand.status === 'busted') { delta = -hand.bet; returned = 0;            }
+      else if (dealerBust)          { delta =  hand.bet; returned = hand.bet * 2; }
+      else if (val > dealerVal)     { delta =  hand.bet; returned = hand.bet * 2; }
+      else if (val < dealerVal)     { delta = -hand.bet; returned = 0;            }
+      else                          { delta =  0;         returned = hand.bet;    }
       hand.delta = delta;
       hand.settled = true;
       totalDelta += delta;
-      app.bankroll += delta;
+      app.bankroll += returned;
       const tag = app.hands.length > 1 ? 'Hand ' + (i + 1) + ': ' : '';
       parts.push(tag + (delta > 0 ? 'Won' : delta < 0 ? 'Lost' : 'Push'));
     });
