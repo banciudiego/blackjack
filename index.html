@@ -649,7 +649,7 @@
   .footnote .ar-toggle { text-decoration: none; font-weight: 700; padding: 0 2px; }
   .footnote .ar-toggle.on  { color: var(--good); }
   .footnote .ar-toggle.off { color: var(--bad);  }
-  /* Auto-reset toggle button in the rail  sits left of the volume slider */
+  /* Auto-reset toggle button in the rail � sits left of the volume slider */
   .ar-rail-btn {
     display: flex;
     flex-direction: column;
@@ -1528,7 +1528,6 @@
     playSound('deal');
     checkNaturals();
   }
-  }
 
   function checkNaturals() {
     const dealerUp = app.dealer[0];
@@ -1566,6 +1565,7 @@
     else                       { hand.delta = Math.floor(hand.bet * 1.5); returned = hand.bet + Math.floor(hand.bet * 1.5); hand.status = 'blackjack'; }
     hand.settled = true;
     app.bankroll += returned;
+    app.phase = 'done';
     renderAll();
     const outcome = dealerBJ && playerBJ ? 'Push (both blackjack)' : (dealerBJ ? 'Dealer blackjack' : 'Blackjack! You win');
     setMessage(outcome + (hand.delta ? (hand.delta > 0 ? ' (+' + fmt(hand.delta) + ')' : ' (' + fmt(hand.delta) + ')') : ''), hand.delta > 0 ? 'win' : (hand.delta < 0 ? 'lose' : ''));
