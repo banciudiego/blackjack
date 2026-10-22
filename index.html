@@ -275,7 +275,7 @@
    */
   .felt-markings {
     position: absolute;
-    top: 126px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
     width: 82%;
@@ -297,7 +297,6 @@
    * The peak of the arch (~6px below SVG top) lands just clear of the circle
    * bottom; both lines droop to the sides like the outside of a coin badge.
    */
-  .table-frame .felt-markings { top: 365px; }
   .table-frame .arc-label {
     font-size: 9.5px;
     letter-spacing: 2.5px;
@@ -309,7 +308,6 @@
   }
   /* Endless has badge+stats above the dealer zone, pushing the player circle ~88px
      lower than table mode, so the SVG top is shifted to match. */
-  .endless-frame .felt-markings { top: 450px; }
   .endless-frame .arc-label {
     font-size: 9.5px;
     letter-spacing: 2.5px;
@@ -341,6 +339,7 @@
   }
 
   .zone { display: flex; flex-direction: column; align-items: center; padding: 12px 0 4px; min-height: 150px; position: relative; }
+  .betting-spot { min-height: 232px; }
 
   .betting-spot::before {
     content: '';
@@ -780,7 +779,6 @@
     .chip { width: 42px; height: 42px; font-size: 0.68rem; }
     .rail h1 { font-size: 1.15rem; }
     .cup-holders span { width: 10px; height: 10px; }
-    .felt-markings { top: 118px; width: 90%; }
   }
 </style>
 </head>
@@ -823,19 +821,7 @@
      <span style="left:94%;"></span>
    </div>
     <div class="table-frame">
-     <!--
-       Felt signage: upward-arching arcs BELOW the player betting circle.
-       The arch peaks sit just below the dashed circle edge; text curves
-       upward in the center like the outer rim of a coin or badge.
-     -->
-     <svg class="felt-markings" viewBox="0 0 320 48" aria-hidden="true">
-       <path id="arcPays" d="M 24 42 Q 160 7 296 42" fill="none" />
-       <path id="arcIns" d="M 58 46 Q 160 26 262 46" fill="none" />
-       <text class="arc-label"><textPath href="#arcPays" startOffset="50%" text-anchor="middle">BLACKJACK PAYS 3 TO 2</textPath></text>
-       <text class="arc-label ins"><textPath href="#arcIns" startOffset="50%" text-anchor="middle">INSURANCE PAYS 2 TO 1</textPath></text>
-     </svg>
-
-    <div>
+<div>
       <div class="zone">
         <div class="zone-label">Dealer <span class="score" id="dealerScore"></span></div>
         <div class="hand" id="dealerHand"></div>
@@ -854,6 +840,17 @@
       <div class="zone betting-spot">
         <div class="zone-label">You</div>
         <div class="hand-row" id="handRow"></div>
+        <svg class="felt-markings" viewBox="0 0 320 48" aria-hidden="true">
+
+       <path id="arcPays" d="M 24 42 Q 160 7 296 42" fill="none" />
+
+       <path id="arcIns" d="M 58 46 Q 160 26 262 46" fill="none" />
+
+       <text class="arc-label"><textPath href="#arcPays" startOffset="50%" text-anchor="middle">BLACKJACK PAYS 3 TO 2</textPath></text>
+
+       <text class="arc-label ins"><textPath href="#arcIns" startOffset="50%" text-anchor="middle">INSURANCE PAYS 2 TO 1</textPath></text>
+
+     </svg>
       </div>
     </div>
 
@@ -893,18 +890,7 @@
      <span style="left:94%;"></span>
    </div>
    <div class="endless-frame">
-     <!--
-       Felt signage: same upward-arching arcs as table mode, shifted lower to
-       account for the badge+stats bar pushing the player circle further down.
-     -->
-     <svg class="felt-markings" viewBox="0 0 320 48" aria-hidden="true">
-       <path id="eArcPays" d="M 24 42 Q 160 7 296 42" fill="none" />
-       <path id="eArcIns"  d="M 58 46 Q 160 26 262 46" fill="none" />
-       <text class="arc-label"><textPath href="#eArcPays" startOffset="50%" text-anchor="middle">BLACKJACK PAYS 3 TO 2</textPath></text>
-       <text class="arc-label ins"><textPath href="#eArcIns" startOffset="50%" text-anchor="middle">INSURANCE PAYS 2 TO 1</textPath></text>
-     </svg>
-
-    <div>
+<div>
       <div class="endless-badge">ENDLESS MODE</div>
 
       <div class="trainer-stats" id="endlessStatsBar">
@@ -925,6 +911,17 @@
       <div class="zone betting-spot">
         <div class="zone-label">You</div>
         <div class="hand-row" id="eHandRow"></div>
+        <svg class="felt-markings" viewBox="0 0 320 48" aria-hidden="true">
+
+       <path id="eArcPays" d="M 24 42 Q 160 7 296 42" fill="none" />
+
+       <path id="eArcIns"  d="M 58 46 Q 160 26 262 46" fill="none" />
+
+       <text class="arc-label"><textPath href="#eArcPays" startOffset="50%" text-anchor="middle">BLACKJACK PAYS 3 TO 2</textPath></text>
+
+       <text class="arc-label ins"><textPath href="#eArcIns" startOffset="50%" text-anchor="middle">INSURANCE PAYS 2 TO 1</textPath></text>
+
+     </svg>
       </div>
     </div>
 
